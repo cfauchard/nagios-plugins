@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf8
 # -----------------------------------------------------------------
-# mysqldump-check.py
-#
 # check mysqldump backups for Nagios
 # - gziped or plain SQL text format
 # - perfdata for backup size

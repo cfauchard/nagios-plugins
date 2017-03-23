@@ -1,0 +1,20 @@
+Install:
+- copy bin/check_mysqldump.py to /usr/lib/nagios/plugins
+- copy the file conf/mysqldump.cfg to /etc/nagios/nrpe.d
+- adapt the file /etc/nagios/nrpe.d/mysqldump.cfg to local environment
+- restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
+
+Warning:
+Ubuntu nrpe version does not allow to send parameters, the activate parameters, you have to:
+- recompile nrpe with configure flag --enable-command-args
+- add dont_blame_nrpe flag
+<vi /etc/nagios/nrpe.cfg>
+dont_blame_nrpe=1
+</vi>
+
+Test:
+On Nagios or Centreon server:
+<sh>
+cd /usr/lib/nagios/plugins
+./check_nrpe -H xehourp.itnovem.fr -c check_mysldump_ehour
+</sh>
