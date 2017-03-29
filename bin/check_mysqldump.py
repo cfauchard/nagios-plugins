@@ -8,7 +8,7 @@
 # Copyright (C) 2016-2017, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 2, 0, 'b1')
+__version_info__ = (0, 3, 0, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
@@ -22,6 +22,7 @@ parser.add_argument("--version", action='version', version='%(prog)s ' + __versi
 parser.add_argument("--delayc", type=int, help="define delay hours for critical", default=48)
 parser.add_argument("--delayw", type=int, help="define delay hours for warning", default=24)
 parser.add_argument("--verbose", action='store_true', help="verbosity flag")
+parser.add_argument("--status", action='store_true', help="status in perfdata flag")
 parser.add_argument("--include", type=str, help="include regex", default="\.*")
 parser.add_argument('directory', help="mysqldump backup directory")
 parser.add_argument('database', help="MySQL database name")
@@ -92,7 +93,7 @@ try:
                 if args.verbose:
                     print("Empty file: ", filepath)
 
-            elif not re_include.match(filename):
+            elif re_include and not re_include.match(filename):
                 if args.verbose:
                     print("File excluded: ", filename)
 
@@ -154,7 +155,13 @@ try:
           (lastbackupdate.isoformat(),
            iso8601(lastbackupage),
            sizeof_fmt(lastbackupsize),
-           lastbackupsize))
+           lastbackupsize),
+          end='')
+
+    if args.status:
+        print(",status=%d" % cr)
+    else:
+        print("")
 
 except NameError:
     print("ERROR: no MySQL backup found")
