@@ -8,7 +8,7 @@
 # Copyright (C) 2016-2017, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 3, 1, 'b1')
+__version_info__ = (0, 4, 1, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
@@ -151,12 +151,16 @@ try:
         print("OK ", end='')
         cr = 0
 
-    print("last backup date: %s, age: %s, size: %s | size=%d" %
-          (lastbackupdate.isoformat(),
-           iso8601(lastbackupage),
-           sizeof_fmt(lastbackupsize),
-           lastbackupsize),
-          end='')
+    print("%s last backup date: %s, age: %s, size: %s | size=%d" %
+          (
+              args.database,
+              lastbackupdate.isoformat(),
+              iso8601(lastbackupage),
+              sizeof_fmt(lastbackupsize),
+              lastbackupsize
+          ),
+          end=''
+          )
 
     if args.status:
         print(" status=%d" % cr)
