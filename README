@@ -1,15 +1,30 @@
+==================================
 Install check_mysqldump.py:
+==================================
 - copy bin/check_mysqldump.py to /usr/lib/nagios/plugins
-- copy the file conf/mysqldump.cfg to /etc/nagios/nrpe.d
-- adapt the file /etc/nagios/nrpe.d/mysqldump.cfg to local environment
+- copy the file conf/nrpe_mysqldump.cfg to /etc/nagios/nrpe.d
+- adapt the file /etc/nagios/nrpe.d/nrpe_mysqldump.cfg to local environment
 - restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
 
+==================================
 Install check_disktemp.py:
+==================================
 - install smartctl binary (package smartmontools on ubuntu 16.04)
-- copy bin/check_disktemp.py to /usr/lib/nagios/plugins (apt install) or /usr/local/nagios/libexec (install from sources)
-- copy and adapt configuration file conf/disktemp.cfg to /etc/nagios3/plugins or /usr/local/nagios/etc/plugins
+- neads root privileges for the command "/usr/lib/nagios/plugins/check_disktemp.py /usr/lib/nagios/plugins/disktemp.cfg"
 
+# cat /etc/sudoers.d/nagios
+nagios ALL=(ALL) NOPASSWD: /usr/lib/nagios/plugins/check_disktemp.py /usr/lib/nagios/plugins/disktemp.cfg
+
+
+- copy bin/check_disktemp.py to /usr/lib/nagios/plugins (apt install) or /usr/local/nagios/libexec (install from sources)
+- copy and adapt configuration file conf/check_disktemp.cfg to /etc/nagios3/plugins or /usr/local/nagios/etc/plugins
+- copy the file conf/nrpe_disktemp.cfg to /etc/nagios/nrpe.d
+- adapt the file /etc/nagios/nrpe.d/nrpe_disktemp.cfg to local environment
+- restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
+
+==================================
 Warning:
+==================================
 Ubuntu nrpe version does not allow to send parameters, the activate parameters, you have to:
 - recompile nrpe with configure flag --enable-command-args
 - add dont_blame_nrpe flag
@@ -17,7 +32,9 @@ Ubuntu nrpe version does not allow to send parameters, the activate parameters, 
 dont_blame_nrpe=1
 </vi>
 
+===================================
 Test check_mysqldump.py:
+===================================
 On Nagios or Centreon server:
 <sh>
 cd /usr/lib/nagios/plugins
