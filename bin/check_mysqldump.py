@@ -8,7 +8,7 @@
 # Copyright (C) 2016-2017, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 4, 1, 'b1')
+__version_info__ = (0, 4, 2, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
@@ -139,12 +139,12 @@ try:
         if args.verbose:
             print("ERROR: last backup out of date")
         print("ERROR ", end='')
-        cr = 3
+        cr = 2
     elif lastbackupage > limitbackupagew:
         if args.verbose:
             print("WARNING: last backup out of date")
         print("WARNING ", end='')
-        cr = 2
+        cr = 1
     else:
         if args.verbose:
             print("last backup OK")
@@ -169,10 +169,10 @@ try:
 
 except NameError:
     print("ERROR: no MySQL backup found")
-    cr = 3
+    cr = 2
 
 except FileNotFoundError as eh:
     print(eh.strerror, eh.filename)
-    cr = 3
+    cr = 2
 
 exit(cr)

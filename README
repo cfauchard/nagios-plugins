@@ -1,8 +1,13 @@
-Install:
+Install check_mysqldump.py:
 - copy bin/check_mysqldump.py to /usr/lib/nagios/plugins
 - copy the file conf/mysqldump.cfg to /etc/nagios/nrpe.d
 - adapt the file /etc/nagios/nrpe.d/mysqldump.cfg to local environment
 - restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
+
+Install check_disktemp.py:
+- install smartctl binary (package smartmontools on ubuntu 16.04)
+- copy bin/check_disktemp.py to /usr/lib/nagios/plugins (apt install) or /usr/local/nagios/libexec (install from sources)
+- copy and adapt configuration file conf/disktemp.cfg to /etc/nagios3/plugins or /usr/local/nagios/etc/plugins
 
 Warning:
 Ubuntu nrpe version does not allow to send parameters, the activate parameters, you have to:
@@ -12,7 +17,7 @@ Ubuntu nrpe version does not allow to send parameters, the activate parameters, 
 dont_blame_nrpe=1
 </vi>
 
-Test:
+Test check_mysqldump.py:
 On Nagios or Centreon server:
 <sh>
 cd /usr/lib/nagios/plugins
