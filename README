@@ -22,6 +22,19 @@ nagios ALL=(ALL) NOPASSWD: /usr/lib/nagios/plugins/check_disktemp.py /usr/lib/na
 - adapt the file /etc/nagios/nrpe.d/nrpe_disktemp.cfg to local environment
 - restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
 
+===========================================
+Install check_omreport_chassis_temp.py:
+===========================================
+- install omreport via Dell Openmanage package
+- copy bin/check_omreport_chassis_temp.py to /usr/lib/nagios/plugins
+- adapt the file /etc/nagios/nrpe.d/nrpe_omreport_chassis_temp.cfg to local environment
+- restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
+
+WARNING: the command "/usr/lib/nagios/plugins/check_openmanage --only temp --perfdata" provided by the package
+check-openmanage do olmost the same things
+
+NOTE: No nead to sudo permissions
+
 ==================================
 Warning:
 ==================================
