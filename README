@@ -35,6 +35,16 @@ check-openmanage do olmost the same things
 
 NOTE: No nead to sudo permissions
 
+===========================================
+Install check_omreport_power.py:
+===========================================
+- install omreport via Dell Openmanage package
+- copy bin/check_omreport_power.py to /usr/lib/nagios/plugins
+- adapt the file /etc/nagios/nrpe.d/nrpe_omreport_power.cfg to local environment
+- restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
+
+NOTE: No nead to sudo permissions
+
 ==================================
 Warning:
 ==================================
