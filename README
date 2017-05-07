@@ -7,6 +7,14 @@ Install check_mysqldump.py:
 - restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
 
 ==================================
+Install check_sqlite.py:
+==================================
+- copy bin/check_sqlite.py to /usr/lib/nagios/plugins
+- copy the file conf/nrpe_sqlite.cfg to /etc/nagios/nrpe.d
+- adapt the file /etc/nagios/nrpe.d/nrpe_sqlite.cfg to local environment
+- restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
+
+==================================
 Install check_disktemp.py:
 ==================================
 - install smartctl binary (package smartmontools on ubuntu 16.04)
