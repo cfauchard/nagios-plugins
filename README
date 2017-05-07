@@ -15,6 +15,14 @@ Install check_sqlite.py:
 - restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
 
 ==================================
+Install check_mediawiki_export.py:
+==================================
+- copy bin/check_mediawiki_export.py to /usr/lib/nagios/plugins
+- copy the file conf/nrpe_mediawiki_export.cfg to /etc/nagios/nrpe.d
+- adapt the file /etc/nagios/nrpe.d/nrpe_mediawiki_export.cfg to local environment
+- restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
+
+==================================
 Install check_disktemp.py:
 ==================================
 - install smartctl binary (package smartmontools on ubuntu 16.04)

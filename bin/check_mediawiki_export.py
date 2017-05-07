@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 # coding: utf8
 # -----------------------------------------------------------------
-# check sqlite backups for Nagios
+# check mediawiki export for Nagios
 # - perfdata for backup size
 #
 # Copyright (C) 2016-2017, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 1, 1, 'b1')
+__version_info__ = (0, 1, 0, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
 import re
 import datetime
 import argparse
-import sqlite3
 
 parser = argparse.ArgumentParser(
     description='check SQLite3 backups for Nagios with perfdatas for size')
@@ -35,14 +34,8 @@ parser.add_argument("--verbose",
 parser.add_argument("--status",
                     action='store_true',
                     help="status in perfdata flag")
-parser.add_argument("--include",
-                    type=str,
-                    help="include regex",
-                    default="\.*")
 parser.add_argument('directory',
-                    help="SQLite backup directory")
-parser.add_argument('database',
-                    help="SQLite database name")
+                    help="SQLite export directory")
 args = parser.parse_args()
 
 
@@ -92,10 +85,10 @@ def sizeof_fmt(num, suffix='B'):
 
 limitbackupagec = datetime.timedelta(hours=args.delayc)
 limitbackupagew = datetime.timedelta(hours=args.delayw)
+page_number = 0
+export_size = 0
 
-re_sql = re.compile(".*\.sqlite$")
-re_include = re.compile(args.include)
-re_database = re.compile(args.database)
+re_wikitext = re.compile(".*\.wikitext$")
 
 lastbackupdate = datetime.datetime.strptime('1970-01-01', '%Y-%m-%d')
 
@@ -112,32 +105,13 @@ try:
             if filesize == 0:
                 if args.verbose:
                     print("Empty file: ", filepath)
-
-            elif re_include and not re_include.match(filename):
-                if args.verbose:
-                    print("File excluded: ", filename)
-
-            elif not re_database.search(filename):
-                if args.verbose:
-                    print("Not configured database")
-
             else:
-                if re_sql.match(filename):
+                if re_wikitext.match(filename):
                     if args.verbose:
-                        print("SQLite file detected: ", filename)
+                        print("Wikitext page file detected: ", filename)
 
-                    # Try to open SQLite database
-                    conn = sqlite3.connect("file:" +
-                                           filepath +
-                                           "?mode=ro",
-                                           uri=True)
-
-                    # SQLite database integrity check
-                    for row in conn.execute("pragma integrity_check;"):
-                        if args.verbose:
-                            print("Integrity check: " + row[0])
-                    conn.close()
-                        
+                    page_number += 1
+                    export_size += filesize
                     backupdate = filedate
                     backupage = datetime.datetime.now() - backupdate
 
@@ -167,13 +141,15 @@ try:
         print("OK ", end='')
         cr = 0
 
-    print("%s last backup date: %s, age: %s, size: %s | size=%d" %
+    print("%s last export date: %s, age: %s, size: %s, pages: %d | size=%d pages=%d" %
           (
-              args.database,
+              args.directory,
               lastbackupdate.isoformat(),
               iso8601(lastbackupage),
-              sizeof_fmt(lastbackupsize),
-              lastbackupsize
+              sizeof_fmt(export_size),
+              page_number,
+              export_size,
+              page_number
           ),
           end=''
           )
@@ -184,7 +160,7 @@ try:
         print("")
 
 except NameError:
-    print("ERROR: no SQLite backup found")
+    print("ERROR: no SQLite export found")
     cr = 2
 
 except FileNotFoundError as eh:
