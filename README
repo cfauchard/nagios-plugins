@@ -1,4 +1,20 @@
 ==================================
+Install check_borg.py:
+==================================
+- copy bin/check_borg.py to /usr/lib/nagios/plugins
+- copy the file conf/nrpe_borg.cfg to /etc/nagios/nrpe.d
+- adapt the file /etc/nagios/nrpe.d/nrpe_borg.cfg to local environment
+- restart nrpe server: <sh>service nagios-nrpe-server restart</sh>
+
+Perfdatas:
+- osize: original size: size of the backup
+- csize: compressed backup size
+- dsize: deduplicated backup size
+
+Options:
+--globalsize: display entire repository size instead of archive size
+
+==================================
 Install check_mysqldump.py:
 ==================================
 - copy bin/check_mysqldump.py to /usr/lib/nagios/plugins
