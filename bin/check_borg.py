@@ -7,7 +7,7 @@
 # Copyright (C) 2016-2017, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 1, 1, 'b1')
+__version_info__ = (0, 1, 2, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
@@ -268,9 +268,9 @@ try:
     else:
         print("")
 
-# except NameError:
-#     print("ERROR: no matching backup found")
-#     cr = 2
+except NameError:
+    print("ERROR: no matching backup found")
+    cr = 2
 
 except FileNotFoundError as eh:
     print(eh.strerror, eh.filename)
