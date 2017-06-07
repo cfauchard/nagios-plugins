@@ -1,1 +1,1 @@
-- correct borg binary path in check_borg.py
+- correct syntax error !!!

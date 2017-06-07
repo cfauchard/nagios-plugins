@@ -7,7 +7,7 @@
 # Copyright (C) 2016-2017, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 1, 0, 'b1')
+__version_info__ = (0, 1, 1, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
@@ -175,7 +175,7 @@ try:
                         [
                             "borg",
                             "info",
-                            args.repository + "/home/chris/borgrepo + "::" + backupname
+                            args.repository + "::" + backupname
                         ],
                         stdout = subprocess.PIPE
                     )
