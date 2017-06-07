@@ -1,1 +1,1 @@
-- add check_borg.py
+- correct borg binary path in check_borg.py

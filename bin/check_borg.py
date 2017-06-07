@@ -126,9 +126,9 @@ try:
     #
     borg_list_process = subprocess.Popen(
         [
-            "/home/chris/borg-linux64",
+            "borg",
             "list",
-            "/home/chris/borgrepo"
+            args.repository
         ],
         stdout=subprocess.PIPE)
 
@@ -173,9 +173,9 @@ try:
                     #
                     borg_info_process = subprocess.Popen(
                         [
-                            "/home/chris/borg-linux64",
+                            "borg",
                             "info",
-                            "/home/chris/borgrepo::" + backupname
+                            args.repository + "/home/chris/borgrepo + "::" + backupname
                         ],
                         stdout = subprocess.PIPE
                     )
