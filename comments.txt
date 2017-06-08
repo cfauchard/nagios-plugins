@@ -1,1 +1,2 @@
-- add HOME environment variable settings to enable sudo calls
+- performances optimizations for nagios timouts
+- get only once backup details

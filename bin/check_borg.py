@@ -7,7 +7,7 @@
 # Copyright (C) 2016-2017, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 1, 4, 'b1')
+__version_info__ = (0, 1, 5, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
@@ -174,73 +174,77 @@ try:
                     lastbackupdate = backupdate
                     lastbackupage = backupage
 
-                    if args.verbose:
-                        print("getting informations for backup " + backupname)
-                    
-                    #
-                    # search backup size
-                    #
-                    borg_info_process = subprocess.Popen(
-                        [
-                            "borg",
-                            "info",
-                            args.repository + "::" + backupname
-                        ],
-                        stdout = subprocess.PIPE
-                    )
-
-                    for buffer_info in borg_info_process.stdout:
-                        #
-                        # convert bytes array to string
-                        #
-                        line_info = str(buffer_info, 'utf-8')
-
-                        #
-                        # search backup by backupname or globaly
-                        #
-                        if args.globalsize:
-                            match_info = re_global.match(line_info)
-                        else:
-                            match_info = re_archive.match(line_info)
-
-                        if match_info:
-
-                            if args.verbose:
-                                print(
-                                    "%s: %s %s original, %s %s compressed, %s %s deduplicated" %
-                                    (
-                                        backupname,
-                                        match_info.group(1),
-                                        match_info.group(2),
-                                        match_info.group(3),
-                                        match_info.group(4),
-                                        match_info.group(5),
-                                        match_info.group(6)
-                                    )
-                                )
-                            lastbackup_original_size = bytes_fmt(
-                                match_info.group(1),
-                                match_info.group(2)
-                            )
-                            lastbackup_compressed_size = bytes_fmt(
-                                match_info.group(3),
-                                match_info.group(4)
-                            )
-                            lastbackup_deduplicated_size = bytes_fmt(
-                                match_info.group(5),
-                                match_info.group(6)
-                            )
-
-                    borg_info_process.wait()
                 else:
                     if args.verbose:
                         print("not newest backup: " + backupname)
+
+                if args.verbose:
+                    print("getting informations for backup " + backupname)
 
     #
     # waiting borg list process
     #
     borg_list_process.wait()
 
+    #
+    # search backup informations
+    #
+    borg_info_process = subprocess.Popen(
+        [
+            "borg",
+            "info",
+            args.repository + "::" + lastbackupname
+        ],
+        stdout = subprocess.PIPE
+    )
+
+    for buffer_info in borg_info_process.stdout:
+        #
+        # convert bytes array to string
+        #
+        line_info = str(buffer_info, 'utf-8')
+
+        #
+        # search backup by backupname or globaly
+        #
+        if args.globalsize:
+            match_info = re_global.match(line_info)
+        else:
+            match_info = re_archive.match(line_info)
+
+        if match_info:
+
+            if args.verbose:
+                print(
+                    "%s: %s %s original, %s %s compressed, %s %s deduplicated" %
+                    (
+                        backupname,
+                        match_info.group(1),
+                        match_info.group(2),
+                        match_info.group(3),
+                        match_info.group(4),
+                        match_info.group(5),
+                        match_info.group(6)
+                    )
+                )
+            lastbackup_original_size = bytes_fmt(
+                match_info.group(1),
+                match_info.group(2)
+            )
+            lastbackup_compressed_size = bytes_fmt(
+                match_info.group(3),
+                match_info.group(4)
+            )
+            lastbackup_deduplicated_size = bytes_fmt(
+                match_info.group(5),
+                match_info.group(6)
+            )
+
+    borg_info_process.wait()
+
+
+
+    
     if lastbackupage > limitbackupagec:
         if args.verbose:
             print("ERROR: last backup out of date")
