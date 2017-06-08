@@ -7,7 +7,7 @@
 # Copyright (C) 2016-2017, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 1, 2, 'b1')
+__version_info__ = (0, 1, 4, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
@@ -42,6 +42,9 @@ parser.add_argument("--include",
                     type=str,
                     help="include regex",
                     default="\.*")
+parser.add_argument("--home",
+                    type=str,
+                    help="setting home directory for sudo calls")
 parser.add_argument('repository',
                     help="Borg backup repository")
 args = parser.parse_args()
@@ -121,6 +124,12 @@ cr = 2
 
 try:
 
+    #
+    # Setting HOME environment variable for sudo calls
+    #
+    if args.home:
+        os.environ['HOME'] = args.home
+    
     #
     # Openning Borg list process
     #

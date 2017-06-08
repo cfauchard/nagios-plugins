@@ -1,1 +1,1 @@
-- correct error handle if no backup found
+- add HOME environment variable settings to enable sudo calls
