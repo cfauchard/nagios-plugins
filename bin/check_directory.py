@@ -96,9 +96,10 @@ try:
         cr = 0
 
     print(
-        "%s %s" % (
+        "%s %s|size=%d" % (
             status_line,
-            sizeof_fmt(directory_size)
+            sizeof_fmt(directory_size),
+            directory_size
         )
     )
 

@@ -1,1 +1,1 @@
-- add check_directory.py
+- add perfdata for check_directory.pl
