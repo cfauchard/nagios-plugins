@@ -1,2 +1,1 @@
-- performances optimizations for nagios timouts
-- get only once backup details
+- add check_directory.py
