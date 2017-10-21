@@ -7,7 +7,7 @@
 # Copyright (C) 2016-2017, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 1, 5, 'b1')
+__version_info__ = (0, 2, 0, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
@@ -21,6 +21,14 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--version",
                     action='version',
                     version='%(prog)s ' + __version__)
+parser.add_argument("--mintime",
+                    type=int,
+                    help="define borg min lock time",
+                    default=48)
+parser.add_argument("--maxtime",
+                    type=int,
+                    help="define borg maxlock time",
+                    default=48)
 parser.add_argument("--delayc",
                     type=int,
                     help="define delay hours for critical",
@@ -129,7 +137,14 @@ try:
     #
     if args.home:
         os.environ['HOME'] = args.home
-    
+
+    #
+    # test borg lock time
+    #
+    if args.mintime:
+        if datetime.datetime.now().hour >= args.mintime and datetime.datetime.now().hour < args.maxtime:
+            exit(0)
+        
     #
     # Openning Borg list process
     #
