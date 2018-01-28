@@ -7,7 +7,7 @@
 # Copyright (C) 2016-2018, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 3, 0, 'b0')
+__version_info__ = (0, 3, 1, 'b0')
 __version__ = '.'.join(map(str, __version_info__))
 
 import re
@@ -20,7 +20,7 @@ import sys
 # Size format function
 #
 def sizeof_fmt(num, suffix='B'):
-    for unit in ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z']:
+    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
         if abs(num) < 1024.0:
             return "%3.1f%s%s" % (num, unit, suffix)
         num /= 1024.0
@@ -231,13 +231,13 @@ sys.stdout.write(
 ))
 
 sys.stdout.write(
-    " | osize=%s csize=%s dsize=%s gosize=%s gcsize=%s gdsize=%s" % (
-    sizeof_fmt(archive_osize),
-    sizeof_fmt(archive_csize),
-    sizeof_fmt(archive_dsize),
-    sizeof_fmt(global_osize),
-    sizeof_fmt(global_csize),
-    sizeof_fmt(global_dsize)
+    " | osize=%d csize=%d dsize=%d gosize=%d gcsize=%d gdsize=%d" % (
+    archive_osize,
+    archive_csize,
+    archive_dsize,
+    global_osize,
+    global_csize,
+    global_dsize
 ))
 
 if args.status:
