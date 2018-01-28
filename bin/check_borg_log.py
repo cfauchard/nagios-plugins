@@ -7,7 +7,7 @@
 # Copyright (C) 2016-2018, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 2, 0, 'b0')
+__version_info__ = (0, 3, 0, 'b0')
 __version__ = '.'.join(map(str, __version_info__))
 
 import re
@@ -56,6 +56,9 @@ parser.add_argument("--delayw",
                     type=int,
                     help="define delay hours for warning",
                     default=24)
+parser.add_argument("--status",
+                    action='store_true',
+                    help="status in perfdata flag")
 parser.add_argument("--verbose",
                     action='store_true',
                     help="verbosity flag")
@@ -218,15 +221,17 @@ else:
     sys.stdout.write("OK: ")
 
 sys.stdout.write(
-    "%s, archive size %s (dedup %s), repository size %s (dedup %s)" % (
+    "%s (%s), archive size %s (dedup %s), repository size %s (dedup %s)" % (
     str(end_date),
+    str(end_date - start_date),
     sizeof_fmt(archive_osize),
     sizeof_fmt(archive_dsize),
     sizeof_fmt(global_osize),
     sizeof_fmt(global_dsize)
 ))
 
-print(" | osize=%s csize=%s dsize=%s gosize=%s gcsize=%s gdsize=%s" % (
+sys.stdout.write(
+    " | osize=%s csize=%s dsize=%s gosize=%s gcsize=%s gdsize=%s" % (
     sizeof_fmt(archive_osize),
     sizeof_fmt(archive_csize),
     sizeof_fmt(archive_dsize),
@@ -234,5 +239,10 @@ print(" | osize=%s csize=%s dsize=%s gosize=%s gcsize=%s gdsize=%s" % (
     sizeof_fmt(global_csize),
     sizeof_fmt(global_dsize)
 ))
+
+if args.status:
+    print(" status=%d" % (cr))
+else:
+    print("")
 
 exit(cr)
