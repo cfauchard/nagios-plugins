@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 # coding: utf8
 # -----------------------------------------------------------------
-# check last borg backup for Nagios
+# check borg log for Nagios
 # - perfdata for backup size
 #
-# Copyright (C) 2016-2017, Christophe Fauchard
+# Copyright (C) 2016-2018, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 1, 0, 'b0')
+__version_info__ = (0, 2, 0, 'b0')
 __version__ = '.'.join(map(str, __version_info__))
 
-import os
 import re
 import datetime
 import argparse
 import sys
+
 
 #
 # Size format function
@@ -25,6 +25,7 @@ def sizeof_fmt(num, suffix='B'):
             return "%3.1f%s%s" % (num, unit, suffix)
         num /= 1024.0
     return "%.1f%s%s" % (num, 'Y', suffix)
+
 
 #
 # Size unformat function
@@ -40,6 +41,7 @@ def bytes_fmt(text_value, unit):
         return(value * 1024**3)
     elif unit == "TB":
         return(value * 1024**4)
+
 
 parser = argparse.ArgumentParser(
     description='check Borg backups logs for Nagios with perfdatas for size')
@@ -65,8 +67,10 @@ args = parser.parse_args()
 # define parse log regex
 #
 re_name = re.compile("Archive name: (.*)")
-re_start_date = re.compile("Time\s\(start\):\s*(\S*)\s*.*, (....-..-.. ..:..:..)")
-re_end_date = re.compile("Time\s\(end\):\s*(\S*)\s*.*, (....-..-.. ..:..:..)")
+re_start_date = re.compile(
+    "Time\s\(start\):\s*(\S*)\s*.*, (....-..-.. ..:..:..)")
+re_end_date = re.compile(
+    "Time\s\(end\):\s*(\S*)\s*.*, (....-..-.. ..:..:..)")
 re_archive = re.compile(
     "This archive:\s*(\S*)\s(..)\s*(\S*)\s(..)\s*(\S*)\s(..)")
 re_global = re.compile(
@@ -212,7 +216,15 @@ elif cr == 1:
     sys.stdout.write("WARNING: ")
 else:
     sys.stdout.write("OK: ")
-sys.stdout.write(name)
+
+sys.stdout.write(
+    "%s, archive size %s (dedup %s), repository size %s (dedup %s)" % (
+    str(end_date),
+    sizeof_fmt(archive_osize),
+    sizeof_fmt(archive_dsize),
+    sizeof_fmt(global_osize),
+    sizeof_fmt(global_dsize)
+))
 
 print(" | osize=%s csize=%s dsize=%s gosize=%s gcsize=%s gdsize=%s" % (
     sizeof_fmt(archive_osize),
