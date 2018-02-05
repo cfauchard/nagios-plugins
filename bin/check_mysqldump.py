@@ -12,10 +12,12 @@ __version_info__ = (0, 4, 2, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import os
+import sys
 import re
 import gzip
 import datetime
 import argparse
+import subprocess
 
 parser = argparse.ArgumentParser(description='check MySQL backups for Nagios with perfdatas for backup size')
 parser.add_argument("--version", action='version', version='%(prog)s ' + __version__)
@@ -23,6 +25,7 @@ parser.add_argument("--delayc", type=int, help="define delay hours for critical"
 parser.add_argument("--delayw", type=int, help="define delay hours for warning", default=24)
 parser.add_argument("--verbose", action='store_true', help="verbosity flag")
 parser.add_argument("--status", action='store_true', help="status in perfdata flag")
+parser.add_argument("--zcat", action='store_true', help="use zcat instead of gzip module (faster but less compatible)")
 parser.add_argument("--include", type=str, help="include regex", default="\.*")
 parser.add_argument('directory', help="mysqldump backup directory")
 parser.add_argument('database', help="MySQL database name")
@@ -81,6 +84,8 @@ re_database = re.compile(args.database)
 
 lastbackupdate = datetime.datetime.strptime('1970-01-01', '%Y-%m-%d')
 
+zip_flag = False
+
 try:
 
     for filename in os.listdir(args.directory):
@@ -88,7 +93,8 @@ try:
         if os.path.isfile(filepath):
 
             filesize = os.path.getsize(filepath)
-
+            zip_flag = False
+            
             if filesize == 0:
                 if args.verbose:
                     print("Empty file: ", filepath)
@@ -103,22 +109,41 @@ try:
 
             else:
                 if re_gzip.match(filename):
+                    zip_flag = True
+                    
                     if args.verbose:
                         print("gzip file detected: ", filename)
-                    fh = gzip.open(filepath)
+
+                    if args.zcat:
+                        if args.verbose:
+                            print("using zcat")
+
+                        lastline = subprocess.check_output(
+                            "zcat %s/%s | tail -1" % (
+                                args.directory, filename
+                            ),
+                            shell=True
+                        ).decode()
+                    else:
+                        if args.verbose:
+                            print("using gzip python module")
+
+                        fh = gzip.open(filepath)
                 elif re_sql.match(filename):
                     if args.verbose:
                         print("SQL file detected: ", filename)
                     fh = open(filepath, 'rb')
 
-                fh.seek(-2, 2)  # Jump to the second last byte.
-                while fh.read(1) != b"\n":  # Until EOL is found...
-                    fh.seek(-2, 1)  # ...jump back the read byte plus one more.
-                lastline = fh.readline().decode()  # Read last line.
+                if (zip_flag and not args.zcat) or not zip_flag:
+                    fh.seek(-2, 2)  # Jump to the second last byte.
+                    while fh.read(1) != b"\n":  # Until EOL is found...
+                        fh.seek(-2, 1)  # ...jump back the read byte plus one more.
+                    lastline = fh.readline().decode()  # Read last line.
 
                 match = re_dump.match(lastline)
                 if match:
-                    backupdate = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
+                    backupdate = datetime.datetime.strptime(match.group(1),
+                                                            '%Y-%m-%d %H:%M:%S')
                     backupage = datetime.datetime.now() - backupdate
 
                     if backupdate > lastbackupdate:
@@ -128,12 +153,15 @@ try:
 
                     if args.verbose:
                         print("backupdate: ", backupdate.isoformat())
-                        print("dump ok (size %s, date %s): %s" % (sizeof_fmt(filesize), backupdate, lastline))
+                        print("dump ok (size %s, date %s): %s" % (
+                            sizeof_fmt(filesize), backupdate, lastline
+                        ))
                 else:
                     if args.verbose:
                         print("ERROR dump: ", filepath)
 
-                fh.close()
+                if (zip_flag and not args.zcat) or not zip_flag:
+                    fh.close()
 
     if lastbackupage > limitbackupagec:
         if args.verbose:
@@ -167,12 +195,16 @@ try:
     else:
         print("")
 
-except NameError:
-    print("ERROR: no MySQL backup found")
-    cr = 2
+# except NameError:
+#     print("ERROR: no MySQL backup found")
+#     cr = 2
 
 except FileNotFoundError as eh:
     print(eh.strerror, eh.filename)
     cr = 2
 
+except:
+    print("Unexpected error:", sys.exc_info())
+    cr = 2
+    
 exit(cr)
