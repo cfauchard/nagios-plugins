@@ -3,10 +3,10 @@
 # -----------------------------------------------------------------
 # check disk temperature with smartctl for Nagios
 #
-# Copyright (C) 2016-2017, Christophe Fauchard
+# Copyright (C) 2016-2018, Christophe Fauchard
 # -----------------------------------------------------------------
 
-__version_info__ = (0, 1, 1, 'b1')
+__version_info__ = (0, 2, 1, 'b1')
 __version__ = '.'.join(map(str, __version_info__))
 
 import re
@@ -38,17 +38,21 @@ try:
         ]).decode()
         temperature = int(temperature_regex.search(output).group(1))
 
-        if temperature > int(config.get("general", "maxcrit")):
+        if temperature > int(
+                config.get(config.get(disk, "disktype"), "maxcrit")):
             cr = 2
-        elif temperature > int(config.get("general", "maxwarn")) and cr < 3:
+        elif temperature > int(
+                config.get(config.get(disk, "disktype"), "maxwarn")):
             cr = 1
 
         status_line = status_line + "%s:%d°C " % (disk, temperature)
         perfdatas = perfdatas + "%s=%d;%d;%d " % (
             disk,
             temperature,
-            int(config.get("general", "maxwarn")),
-            int(config.get("general", "maxcrit"))
+            int(
+                config.get(config.get(disk, "disktype"), "maxwarn")),
+            int(
+                config.get(config.get(disk, "disktype"), "maxcrit"))
         )
 
 except FileNotFoundError as error:
